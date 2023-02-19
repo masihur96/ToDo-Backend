@@ -6,7 +6,7 @@ class Task(Base):
     id=Column(Integer,primary_key=True)
     title= Column(String(25),unique=True)
     body=Column(String(80),unique=True)
-    isFinished=Column(Boolean)
+    isFinished=Column(Boolean,default=False)
 
     def __repr__(self) :
             return f"<Task {self.title}"
@@ -15,8 +15,8 @@ class User(Base):
     __tablename__='user'
     id=Column(Integer,primary_key=True)
     name= Column(String(25),unique=True)
-    password=Column(String(20),unique=True)
-    isFinished=Column(Boolean,default=False)
+    email=Column(String(20),unique=True)
+    password=Column(String(20))
 
     def __repr__(self) :
             return f"<User {self.name}"
