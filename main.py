@@ -3,7 +3,9 @@ from pydantic import BaseModel
 from sqlalchemy.orm import Session
 from database import engine
 import models,schemas
+from hashing import Hash
 from typing import List
+
 
 app=FastAPI()
 
@@ -34,11 +36,7 @@ def alltask():
 
 
 
-#user schema
-class UserModel(BaseModel):
-    name:str
-    email:str
-    password:str
+
 
 def get_db():
     db = Session(bind=engine)
@@ -81,7 +79,7 @@ def updated_task(id,request:schemas.TaskModel,db:Session = Depends(get_db)):
     if not task.first():
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Task With Id {id} not found")
     
-    task.update({'title':request.title,'body':request.body,'isFinished':request.finished})
+    task.update({'title':request.title,'body':request.body,'isFinished':request.isFinished})
     db.commit()
     return {"The Task is Updated Successfully"}
 
@@ -89,17 +87,57 @@ def updated_task(id,request:schemas.TaskModel,db:Session = Depends(get_db)):
 # create Task
 @app.post('/task',status_code=status.HTTP_201_CREATED)
 def create_task(request:schemas.TaskModel,db:Session = Depends(get_db)):
-    new_task = models.Task(title=request.title,body=request.body,isFinished=request.finished)
+    new_task = models.Task(title=request.title,body=request.body,isFinished=request.isFinished)
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
     return new_task
 
+
+
+
 # create User
-@app.post('/user',status_code=status.HTTP_201_CREATED)
-def create_user(request:UserModel,db:Session = Depends(get_db)):
-    new_user = models.User(name=request.name,email=request.email,password=request.password)
+@app.post('/user',status_code=status.HTTP_201_CREATED,response_model=schemas.ShowUserModel)
+def create_user(request:schemas.UserModel,db:Session = Depends(get_db)):
+    new_user = models.User(name=request.name,email=request.email,password=Hash.bncrypt(request.password))
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     return new_user
+
+#Get All User
+@app.get('/users',response_model=List[schemas.ShowUserModel],status_code=status.HTTP_200_OK)
+def all_user(db:Session = Depends(get_db)):
+        users = db.query(models.User).all()
+        return users
+
+#Get User by ID
+@app.get('/user/{id}',status_code=200,response_model=schemas.ShowUserModel)
+def user_by_id(id,response:Response,db:Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id==id).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"User with the id {id} is not found")
+    
+    return user
+
+#Delete  User
+@app.delete('/users/{id}',status_code=status.HTTP_204_NO_CONTENT)
+def delete_user(id,db:Session = Depends(get_db)):
+    user =db.query(models.User).filter(models.User.id==id) 
+    if not user.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"User With Id {id} not found")
+    
+    user.delete(synchronize_session=False)
+    db.commit()
+    return {"The User is Deleted Successfully"}
+
+#Update User
+@app.put('/users/{id}',status_code=status.HTTP_202_ACCEPTED)
+def updated_users(id,request:schemas.ShowUserModel,db:Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.id==id)
+    if not user.first():
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"User With Id {id} not found")
+    
+    user.update({'name':request.name,'email':request.email})
+    db.commit()
+    return {"The User is Updated Successfully"}

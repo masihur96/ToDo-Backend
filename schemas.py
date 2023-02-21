@@ -11,3 +11,18 @@ class TaskModel(BaseModel):
 class ShowTaskModel(TaskModel):
     class Config():
         orm_mode = True
+
+
+#user schema
+class UserModel(BaseModel):
+    name:str
+    email:str
+    password:str
+
+#Show user schema
+class ShowUserModel(BaseModel):
+    name:str
+    email:str
+
+    class Config():
+        orm_mode = True
