@@ -120,7 +120,7 @@ def user_by_id(id,response:Response,db:Session = Depends(get_db)):
     
     return user
 
-#Delete  User
+#Delete User
 @app.delete('/users/{id}',status_code=status.HTTP_204_NO_CONTENT)
 def delete_user(id,db:Session = Depends(get_db)):
     user =db.query(models.User).filter(models.User.id==id) 
