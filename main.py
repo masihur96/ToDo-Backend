@@ -11,32 +11,8 @@ app=FastAPI()
 
 #Health Check
 @app.get('/')
-def alltask():
+def Health():
     return {'data':'Your connection is healthy'}
-
-
-
-
-# #Task with Limit & Condition
-# @app.get('/task/{limit}')
-# def finished(limit:int,published:bool):
-#     if published:
-#         return {'data':f'{limit} published Task list'}
-#     else:
-#         return {'data':f'{limit} Unpublished Task list list'}
-
-
-
-
-
-# #Comments of task
-# @app.get('/task/{id}/comments')
-# def comments(id):
-#     return {'data':{'1','2'}}
-
-
-
-
 
 def get_db():
     db = Session(bind=engine)
@@ -47,13 +23,13 @@ def get_db():
 
 
 #Get All Task
-@app.get('/tasks',response_model=List[schemas.ShowTaskModel],status_code=status.HTTP_200_OK)
+@app.get('/tasks',response_model=List[schemas.ShowTaskModel],status_code=status.HTTP_200_OK,tags=['task'])
 def all_task(db:Session = Depends(get_db)):
         tasks = db.query(models.Task).all()
         return tasks
 
 #Get Task by ID
-@app.get('/task/{id}',status_code=200,response_model=schemas.ShowTaskModel)
+@app.get('/task/{id}',status_code=200,response_model=schemas.ShowTaskModel,tags=['task'])
 def task_by_id(id,response:Response,db:Session = Depends(get_db)):
     task = db.query(models.Task).filter(models.Task.id==id).first()
     if not task:
@@ -62,7 +38,7 @@ def task_by_id(id,response:Response,db:Session = Depends(get_db)):
     return task
 
 #Delete  Task
-@app.delete('/tasks/{id}',status_code=status.HTTP_204_NO_CONTENT)
+@app.delete('/tasks/{id}',status_code=status.HTTP_204_NO_CONTENT,tags=['task'])
 def delete_task(id,db:Session = Depends(get_db)):
     task =db.query(models.Task).filter(models.Task.id==id) 
     if not task.first():
@@ -73,7 +49,7 @@ def delete_task(id,db:Session = Depends(get_db)):
     return {"The Task is Deleted Successfully"}
 
 #Update Task
-@app.put('/tasks/{id}',status_code=status.HTTP_202_ACCEPTED)
+@app.put('/tasks/{id}',status_code=status.HTTP_202_ACCEPTED,tags=['task'])
 def updated_task(id,request:schemas.TaskModel,db:Session = Depends(get_db)):
     task = db.query(models.Task).filter(models.Task.id==id)
     if not task.first():
@@ -85,9 +61,9 @@ def updated_task(id,request:schemas.TaskModel,db:Session = Depends(get_db)):
 
 
 # create Task
-@app.post('/task',status_code=status.HTTP_201_CREATED)
+@app.post('/task',status_code=status.HTTP_201_CREATED,tags=['task'])
 def create_task(request:schemas.TaskModel,db:Session = Depends(get_db)):
-    new_task = models.Task(title=request.title,body=request.body,isFinished=request.isFinished)
+    new_task = models.Task(title=request.title,body=request.body,isFinished=request.isFinished,user_id=1)
     db.add(new_task)
     db.commit()
     db.refresh(new_task)
@@ -97,7 +73,7 @@ def create_task(request:schemas.TaskModel,db:Session = Depends(get_db)):
 
 
 # create User
-@app.post('/user',status_code=status.HTTP_201_CREATED,response_model=schemas.ShowUserModel)
+@app.post('/user',status_code=status.HTTP_201_CREATED,response_model=schemas.ShowUserModel,tags=['user'])
 def create_user(request:schemas.UserModel,db:Session = Depends(get_db)):
     new_user = models.User(name=request.name,email=request.email,password=Hash.bncrypt(request.password))
     db.add(new_user)
@@ -106,13 +82,13 @@ def create_user(request:schemas.UserModel,db:Session = Depends(get_db)):
     return new_user
 
 #Get All User
-@app.get('/users',response_model=List[schemas.ShowUserModel],status_code=status.HTTP_200_OK)
+@app.get('/users',response_model=List[schemas.ShowUserModel],status_code=status.HTTP_200_OK,tags=['user'])
 def all_user(db:Session = Depends(get_db)):
         users = db.query(models.User).all()
         return users
 
 #Get User by ID
-@app.get('/user/{id}',status_code=200,response_model=schemas.ShowUserModel)
+@app.get('/user/{id}',status_code=200,response_model=schemas.ShowUserModel,tags=['user'])
 def user_by_id(id,response:Response,db:Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id==id).first()
     if not user:
@@ -121,7 +97,7 @@ def user_by_id(id,response:Response,db:Session = Depends(get_db)):
     return user
 
 #Delete User
-@app.delete('/users/{id}',status_code=status.HTTP_204_NO_CONTENT)
+@app.delete('/users/{id}',status_code=status.HTTP_204_NO_CONTENT,tags=['user'])
 def delete_user(id,db:Session = Depends(get_db)):
     user =db.query(models.User).filter(models.User.id==id) 
     if not user.first():
@@ -132,7 +108,7 @@ def delete_user(id,db:Session = Depends(get_db)):
     return {"The User is Deleted Successfully"}
 
 #Update User
-@app.put('/users/{id}',status_code=status.HTTP_202_ACCEPTED)
+@app.put('/users/{id}',status_code=status.HTTP_202_ACCEPTED,tags=['user'])
 def updated_users(id,request:schemas.ShowUserModel,db:Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id==id)
     if not user.first():

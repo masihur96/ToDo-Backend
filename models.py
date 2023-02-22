@@ -1,22 +1,28 @@
 from database import Base
-from sqlalchemy import Column,Integer,String,Boolean,Text
+from sqlalchemy import Column,Integer,String,Boolean,ForeignKey
+from sqlalchemy.orm import relationship
 
 class Task(Base):
-    __tablename__='task'
+    __tablename__='tasks'
     id=Column(Integer,primary_key=True)
-    title= Column(String(25),unique=True)
-    body=Column(String(80),unique=True)
+    title= Column(String)
+    body=Column(String)
     isFinished=Column(Boolean,default=False)
+    user_id= Column(Integer,ForeignKey('users.id'))
+
+    creator = relationship("User",back_populates="tasks")
 
     def __repr__(self) :
             return f"<Task {self.title}"
 
 class User(Base):
-    __tablename__='user'
+    __tablename__='users'
     id=Column(Integer,primary_key=True)
     name= Column(String)
     email=Column(String)
     password=Column(String)
+
+    tasks = relationship("Task",back_populates="creator")
 
     def __repr__(self) :
             return f"<User {self.name}"

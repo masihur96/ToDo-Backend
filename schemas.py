@@ -1,3 +1,4 @@
+from typing import List
 from pydantic import BaseModel
 
 
@@ -7,10 +8,7 @@ class TaskModel(BaseModel):
     body:str
     isFinished:bool
 
-#Show task schema
-class ShowTaskModel(TaskModel):
-    class Config():
-        orm_mode = True
+
 
 
 #user schema
@@ -23,6 +21,16 @@ class UserModel(BaseModel):
 class ShowUserModel(BaseModel):
     name:str
     email:str
+    tasks:List
 
+    class Config():
+        orm_mode = True
+
+#Show task schema
+class ShowTaskModel(BaseModel):
+    title:str
+    body:str
+    isFinished:bool
+    creator:ShowUserModel
     class Config():
         orm_mode = True
