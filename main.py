@@ -89,7 +89,7 @@ def all_user(db:Session = Depends(get_db)):
 
 #Get User by ID
 @app.get('/user/{id}',status_code=200,response_model=schemas.ShowUserModel,tags=['user'])
-def user_by_id(id,response:Response,db:Session = Depends(get_db)):
+def user_by_id(id,db:Session = Depends(get_db)):
     user = db.query(models.User).filter(models.User.id==id).first()
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"User with the id {id} is not found")

@@ -21,7 +21,7 @@ class UserModel(BaseModel):
 class ShowUserModel(BaseModel):
     name:str
     email:str
-    tasks:List
+    task:List
 
     class Config():
         orm_mode = True
