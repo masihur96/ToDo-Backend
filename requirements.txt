@@ -3,3 +3,5 @@ uvicorn
 sqlalchemy
 passlib
 bcrypt
+pydantic
+psycopg2
