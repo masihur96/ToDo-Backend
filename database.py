@@ -5,9 +5,16 @@ from sqlalchemy.orm import declarative_base,sessionmaker
 
 
 
-engine= create_engine('postgresql://postgres:L69v5j87V39YTVjeL1kI@containers-us-west-199.railway.app:6450/railway',
+engine= create_engine('postgresql://postgres:aweLD6S3XhMKtKyDMXj1@containers-us-west-121.railway.app:5889/railway',
                       echo=True)
 
 Base = declarative_base()
+
+def get_db():
+    db = Session(bind=engine)
+    try:
+        yield db
+    finally:
+        db.close()
 
 Session = sessionmaker()
