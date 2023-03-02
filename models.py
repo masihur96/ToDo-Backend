@@ -3,6 +3,17 @@ from sqlalchemy import Column,Integer,String,Boolean,ForeignKey
 from sqlalchemy.orm import relationship
 
 
+class User(Base):
+    __tablename__='users'
+    id=Column(Integer,primary_key=True)
+    name= Column(String)
+    email=Column(String)
+    password=Column(String)
+    task = relationship("Task",back_populates="creator")
+    def __repr__(self) :
+            return f"<User {self.name}"
+
+    
 class Task(Base):
     __tablename__='tasks'
     id=Column(Integer,primary_key=True)
@@ -10,21 +21,9 @@ class Task(Base):
     body=Column(String)
     isFinished=Column(Boolean,default=False)
     user_id= Column(Integer,ForeignKey('users.id'))
-
+    assign_to_id = Column(Integer)
     creator = relationship("User",back_populates="task")
 
     def __repr__(self) :
             return f"<Task {self.title}"
-
-class User(Base):
-    __tablename__='users'
-    id=Column(Integer,primary_key=True)
-    name= Column(String)
-    email=Column(String)
-    password=Column(String)
-
-    task = relationship("Task",back_populates="creator")
-
-    def __repr__(self) :
-            return f"<User {self.name}"
-   
+    

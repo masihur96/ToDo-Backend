@@ -7,6 +7,8 @@ class TaskModel(BaseModel):
     title:str
     body:str
     isFinished:bool
+    user_id:int
+    assign_to_id:int
 
 
 
@@ -21,7 +23,7 @@ class UserModel(BaseModel):
 class ShowUserModel(BaseModel):
     name:str
     email:str
-    task:List
+    # task:List
 
     class Config():
         orm_mode = True
@@ -31,6 +33,7 @@ class ShowTaskModel(BaseModel):
     title:str
     body:str
     isFinished:bool
-    creator:ShowUserModel
+    submitor: object
+    creator: object
     class Config():
         orm_mode = True
