@@ -5,3 +5,5 @@ passlib
 bcrypt
 pydantic
 psycopg2
+python-jose
+python-multipart
