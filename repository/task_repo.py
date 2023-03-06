@@ -10,7 +10,8 @@ def create_task(request:schemas.TaskModel,db:Session):
         db.commit()
         db.refresh(new_task)
         return new_task
-def all_task(db:Session):
+
+def get_all_task(db:Session):
         tasks = db.query(models.Task).all()
         return tasks
 
