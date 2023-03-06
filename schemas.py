@@ -23,6 +23,7 @@ class UserModel(BaseModel):
 class ShowUserModel(BaseModel):
     name:str
     email:str
+    id:int
     # task:List
 
     class Config():
