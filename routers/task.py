@@ -11,28 +11,29 @@ router = APIRouter(
     tags=['Task']
 )
 
-@router.get('/',status_code=status.HTTP_200_OK)
-def all_task(db:Session = Depends(get_db),current_user:schemas.UserModel=Depends(oauth2.get_current_user)):
-        return task_repo.all_task(db)
 
+#,current_user:schemas.UserModel=Depends(oauth2.get_current_user) To Authorization
 # create Task
 @router.post('/',status_code=status.HTTP_201_CREATED)
-def create_task(request:schemas.TaskModel,db:Session = Depends(get_db),current_user:schemas.UserModel=Depends(oauth2.get_current_user)):
+def create_task(request:schemas.TaskModel,db:Session = Depends(get_db)):
     return  task_repo.create_task(request,db)
-
+#get All Task
+@router.get('/',status_code=200)
+def all_task(db:Session = Depends(get_db)):
+        return task_repo.get_all_task(db)
 #Get Task by ID
 @router.get('/{id}',status_code=200,response_model=schemas.ShowTaskModel)
-def task_by_user(id,db:Session = Depends(get_db),current_user:schemas.UserModel=Depends(oauth2.get_current_user)):
+def task_by_user(id,db:Session = Depends(get_db)):
     return task_repo.single_task(id,db)
 
 #Delete  Task
 @router.delete('/{id}',status_code=status.HTTP_204_NO_CONTENT)
-def delete_task(id,db:Session = Depends(get_db),current_user:schemas.UserModel=Depends(oauth2.get_current_user)):
+def delete_task(id,db:Session = Depends(get_db)):
     return task_repo.delet_single_task(id,db)
 
 #Update Task
 @router.put('/{id}',status_code=status.HTTP_202_ACCEPTED,)
-def updated_task(id,request:schemas.TaskModel,db:Session = Depends(get_db),current_user:schemas.UserModel=Depends(oauth2.get_current_user)):
+def updated_task(id,request:schemas.TaskModel,db:Session = Depends(get_db)):
     return task_repo.update_single_task(id,request,db)
 
 
